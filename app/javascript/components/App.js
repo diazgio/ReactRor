@@ -1,29 +1,23 @@
 import React, { useState, useEffect } from 'react';
+import CountDown from './CountDown';
+import Product from './Product';
 
 const App = () => {
-  const [countdown, setCountdown] = useState('');
+  const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    const calculateCountdown = () => {
-      const now = new Date();
-      const christmas = new Date('25 Dec 2024');
-      const difference = christmas - now;
-
-      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-
-      setCountdown(`Faltan ${days} days, ${hours} hours, ${minutes} minutes, ${seconds} seconds para Navidad`);
-    };
-
-    const interval = setInterval(calculateCountdown, 1000);
-    return () => clearInterval(interval);
+    fetch('http://localhost:3000/api/v1/products')
+      .then(response => response.json())
+      .then(data => setProducts(data))
+      .catch(error => console.error('Error:', error));
   }, []);
 
   return (
     <>
-      <h1>{countdown}</h1>
+      <CountDown />
+      {products.map((product, index) => (
+        <Product key={index} product={product} />
+      ))}
     </>
   );
 }
